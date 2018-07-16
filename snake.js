@@ -20,6 +20,8 @@ const startY = ctx.canvas.height / 2 - (snakeBlockSize);
 
 // game variables
 let snakeBlocks = [{ x: startX, y: startY }];
+const snakeWillGrowOnAppleAmount = 3;
+let growSnakeCount = 0;
 let gameOver = false;
 let skipRemoveTail = false;
 let direction = 'down';
@@ -32,6 +34,7 @@ const appleColor = 'green';
 const appleSize = snakeBlockSize;
 
 const addNewHeadForSnake = () => {
+  reduceGrowSnakeCount();
   const previousHead = snakeBlocks[snakeBlocks.length - 1];
   const x = setNewHeadX(previousHead.x);
   const y = setNewHeadY(previousHead.y);
@@ -75,6 +78,15 @@ const removeSnakeTail = () => {
   }
 };
 
+const reduceGrowSnakeCount = () => {
+  if(growSnakeCount > 0){
+    growSnakeCount--;
+  } else {
+    skipRemoveTail = false;
+  }
+
+}
+
 const generateApple = () => {
   const appleX = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
   const appleY = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
@@ -107,6 +119,8 @@ const checkIfSnakeHitApple = (x, y) => {
     scoreText.innerHTML = `Score: ${score}`;
     console.log(`Score: ${score}`);
     appleActive = false;
+    growSnakeCount += snakeWillGrowOnAppleAmount;
+    skipRemoveTail = true;
   }
 }; 
 
