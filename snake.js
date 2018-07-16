@@ -10,7 +10,7 @@ const bodyColor = '#b4b4b4';
 const gameOverColor = 'red';
 
 //set snake block size
-const snakeBlockSize = ctx.canvas.width * 0.05;
+const snakeBlockSize = 40;
 const snakeBlockFillSize = snakeBlockSize - 0.1 * snakeBlockSize;
 
 // set snake starting point
@@ -22,13 +22,20 @@ let snakeBlocks = [{ x: startX, y: startY }];
 let gameOver = false;
 let skipRemoveTail = false;
 let direction = 'down';
+let appleActive = false;
+
+// setup apple
+const appleColor = 'green';
+const appleX = canvas.width / snakeBlockSize;
+const appleY = canvas.height / snakeBlockSize;
+const appleSize = snakeBlockSize;
 
 const addNewHeadForSnake = () => {
   const previousHead = snakeBlocks[snakeBlocks.length - 1];
   const x = setNewHeadX(previousHead.x);
   const y = setNewHeadY(previousHead.y);
 
-  const nextBlock = { x: x, y: y };
+  const newSnakeHead = { x: x, y: y };
 
   // set previous head color to body color
   ctx.fillStyle = bodyColor;
@@ -37,7 +44,7 @@ const addNewHeadForSnake = () => {
   checkIfSnakeHitWall(x,y);
   checkIfSnakeHitBody(x,y);
 
-  snakeBlocks.push(nextBlock);
+  snakeBlocks.push(newSnakeHead);
 
   // Draw new head with headcolor
   ctx.fillStyle = gameOver ? gameOverColor : headColor;
@@ -56,21 +63,6 @@ const setNewHeadY = prevY => {
   return prevY;
 };
 
-const checkIfSnakeHitWall = (x, y) => {
-  if (x >= canvas.width - snakeBlockSize && direction === 'right') gameOver = true;
-  if (x === 0 && direction === 'left') gameOver = true;
-
-  if (y === canvas.height - snakeBlockSize && direction === 'down') gameOver = true;
-  if (y === 0 && direction === 'up') gameOver = true;
-}
-
-const checkIfSnakeHitBody = (x, y) => {
-    const hitBody = snakeBlocks.find(block => block['x'] === x && block['y'] === y);
-    if (hitBody !== undefined){
-        gameOver = true;
-    }
-}
-
 const removeSnakeTail = () => {
   if (!skipRemoveTail) {
     ctx.clearRect(snakeBlocks[0].x, snakeBlocks[0].y, snakeBlockSize, snakeBlockSize);
@@ -79,6 +71,32 @@ const removeSnakeTail = () => {
     }
   }
 };
+
+const generateApple = () => {
+  const x = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
+  const y = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
+
+  ctx.fillStyle = appleColor;
+  ctx.fillRect(x, y, snakeBlockFillSize, snakeBlockFillSize);
+  appleActive = true;
+}
+
+// snake collisions
+const checkIfSnakeHitWall = (x, y) => {
+  if (x >= canvas.width - snakeBlockSize && direction === 'right') gameOver = true;
+  if (x === 0 && direction === 'left') gameOver = true;
+
+  if (y === canvas.height - snakeBlockSize && direction === 'down') gameOver = true;
+  if (y === 0 && direction === 'up') gameOver = true;
+};
+
+const checkIfSnakeHitBody = (x, y) => {
+    const hitBody = snakeBlocks.find(block => block['x'] === x && block['y'] === y);
+    if (hitBody !== undefined){
+        gameOver = true;
+    }
+};
+
 
 const movementDirection = (keyCode) => {
     // left arrow = 37, up arrow = 38, right arrow = 39, down arrow = 40
@@ -98,12 +116,17 @@ const movementDirection = (keyCode) => {
         default:
           return null;
       }
-}
+};
 
 setInterval(function() {
   if (gameOver) {
     return;
   }
+
+  if(!appleActive){
+    generateApple();
+  }
+
   addNewHeadForSnake();
   removeSnakeTail();
 }, 150);
