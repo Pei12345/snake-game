@@ -1,5 +1,6 @@
 // setup canvas
 const canvas = document.querySelector('canvas');
+const scoreText = document.getElementById('score-text');
 const ctx = canvas.getContext('2d');
 ctx.canvas.width = 800;
 ctx.canvas.height = ctx.canvas.width;
@@ -24,6 +25,7 @@ let skipRemoveTail = false;
 let direction = 'down';
 let appleActive = false;
 let appleLocation = {};
+let score = 0;
 
 // setup apple
 const appleColor = 'green';
@@ -44,7 +46,6 @@ const addNewHeadForSnake = () => {
   checkIfSnakeHitBody(x,y);
   checkIfSnakeHitApple(x,y);
 
-  console.log(appleLocation);
 
   snakeBlocks.push(newSnakeHead);
 
@@ -102,10 +103,12 @@ const checkIfSnakeHitBody = (x, y) => {
 
 const checkIfSnakeHitApple = (x, y) => {
   if(appleLocation.x === x && appleLocation.y === y){
-    console.log('hit');
+    score++;
+    scoreText.innerHTML = `Score: ${score}`;
+    console.log(`Score: ${score}`);
     appleActive = false;
   }
-} 
+}; 
 
 const movementDirection = (keyCode) => {
     // left arrow = 37, up arrow = 38, right arrow = 39, down arrow = 40
