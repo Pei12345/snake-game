@@ -87,11 +87,11 @@ const generateApple = () => {
 
 // snake collisions
 const checkIfSnakeHitWall = (x, y) => {
-  if (x >= canvas.width - snakeBlockSize && direction === 'right') gameOver = true;
-  if (x === 0 && direction === 'left') gameOver = true;
+  if (x > canvas.width - snakeBlockSize ) gameOver = true;
+  if (x < 0 ) gameOver = true;
 
-  if (y === canvas.height - snakeBlockSize && direction === 'down') gameOver = true;
-  if (y === 0 && direction === 'up') gameOver = true;
+  if (y > canvas.height - snakeBlockSize) gameOver = true;
+  if (y < 0 ) gameOver = true;
 };
 
 const checkIfSnakeHitBody = (x, y) => {
@@ -130,9 +130,10 @@ const movementDirection = (keyCode) => {
       }
 };
 
-setInterval(function() {
+const gameLoop = setInterval(function() {
   if (gameOver) {
-    return;
+    console.log("Game over")
+    clearInterval(gameLoop);
   }
 
   if(!appleActive){
