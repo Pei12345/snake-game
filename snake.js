@@ -90,11 +90,18 @@ const reduceGrowSnakeCount = () => {
 const generateApple = () => {
   const appleX = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
   const appleY = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
-  appleLocation = { x:appleX, y:appleY };
+  const appleOnBody = snakeBlocks.find(block => block['x'] === appleX && block['y'] === appleY);
 
-  ctx.fillStyle = appleColor;
-  ctx.fillRect(appleX, appleY, snakeBlockFillSize, snakeBlockFillSize);
-  appleActive = true;
+  if(appleOnBody === undefined){
+    appleLocation = { x:appleX, y:appleY };
+  
+    ctx.fillStyle = appleColor;
+    ctx.fillRect(appleX, appleY, snakeBlockFillSize, snakeBlockFillSize);
+    appleActive = true;    
+  } else {
+    generateApple();
+  }
+
 };
 
 // snake collisions
