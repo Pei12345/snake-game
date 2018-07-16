@@ -23,11 +23,10 @@ let gameOver = false;
 let skipRemoveTail = false;
 let direction = 'down';
 let appleActive = false;
+let appleLocation = {};
 
 // setup apple
 const appleColor = 'green';
-const appleX = canvas.width / snakeBlockSize;
-const appleY = canvas.height / snakeBlockSize;
 const appleSize = snakeBlockSize;
 
 const addNewHeadForSnake = () => {
@@ -43,6 +42,9 @@ const addNewHeadForSnake = () => {
 
   checkIfSnakeHitWall(x,y);
   checkIfSnakeHitBody(x,y);
+  checkIfSnakeHitApple(x,y);
+
+  console.log(appleLocation);
 
   snakeBlocks.push(newSnakeHead);
 
@@ -73,13 +75,14 @@ const removeSnakeTail = () => {
 };
 
 const generateApple = () => {
-  const x = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
-  const y = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
+  const appleX = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
+  const appleY = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
+  appleLocation = { x:appleX, y:appleY };
 
   ctx.fillStyle = appleColor;
-  ctx.fillRect(x, y, snakeBlockFillSize, snakeBlockFillSize);
+  ctx.fillRect(appleX, appleY, snakeBlockFillSize, snakeBlockFillSize);
   appleActive = true;
-}
+};
 
 // snake collisions
 const checkIfSnakeHitWall = (x, y) => {
@@ -97,6 +100,12 @@ const checkIfSnakeHitBody = (x, y) => {
     }
 };
 
+const checkIfSnakeHitApple = (x, y) => {
+  if(appleLocation.x === x && appleLocation.y === y){
+    console.log('hit');
+    appleActive = false;
+  }
+} 
 
 const movementDirection = (keyCode) => {
     // left arrow = 37, up arrow = 38, right arrow = 39, down arrow = 40
