@@ -1,6 +1,7 @@
 // modals
 const gameOverModal = document.getElementById('modal-game-over');
 const gameOverText = document.getElementById('game-over-text');
+const restart = document.getElementById('restart');
 const modalCloseSpan = document.getElementsByClassName("close")[0];
 
 // setup canvas
@@ -40,7 +41,24 @@ let skipRemoveTail = false;
 let score = 0;
 let snakeBlocks = [{ x: startX, y: startY }];
 let gameWaitingForStart = true;
+let gameLoopInterval = 90;
 
+const resetGame = () => {
+  appleActive = false;
+  appleLocation = {};
+  direction = '';
+  gameOver = false;
+  growSnakeCount = 0;
+  skipRemoveTail = false;
+  score = 0;
+  snakeBlocks = [{ x: startX, y: startY }];
+  gameWaitingForStart = true;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = headColor;
+  ctx.fillRect(startX, startY, snakeBlockFillSize, snakeBlockFillSize);
+};
 
 const addNewHeadForSnake = () => {
   reduceGrowSnakeCount();
@@ -162,26 +180,6 @@ const movementDirection = (keyCode) => {
       }
 };
 
-const gameLoop = setInterval(() => {
-  
-  if (gameOver) {
-    console.log("Game over")
-    showGameOverModal();
-    clearInterval(gameLoop);
-  }
-  
-  if(!appleActive){
-    generateApple();
-  }
-
-  if(gameWaitingForStart){
-    return;
-  }
-
-  addNewHeadForSnake();
-  removeSnakeTail();
-}, 150);
-
 document.onkeydown = (e) => {    
   const keyCode = e.keyCode;
   movementDirection(keyCode);
@@ -203,9 +201,36 @@ modalCloseSpan.onclick = () => {
   gameOverModal.style.display = "none";
 }
 
+restart.onclick = () => {  
+  resetGame();
+  game = setInterval(gameLoop, gameLoopInterval);
+  gameOverModal.style.display = "none";
+}
+
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = (event) => {
   if (event.target == gameOverModal) {
       gameOverModal.style.display = "none";
   }
 }
+
+const gameLoop = () => {
+  
+  if (gameOver) {
+    showGameOverModal();
+    clearInterval(game);
+  }
+  
+  if(!appleActive){
+    generateApple();
+  }
+
+  if(gameWaitingForStart){
+    return;
+  }
+
+  addNewHeadForSnake();
+  removeSnakeTail();
+};
+
+let game = setInterval(gameLoop, gameLoopInterval);
