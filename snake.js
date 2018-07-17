@@ -28,7 +28,7 @@ const appleSize = snakeBlockSize;
 // game variables
 let appleActive = false;
 let appleLocation = {};
-let direction = 'down';
+let direction = '';
 let gameOver = false;
 let growSnakeCount = 0;
 let skipRemoveTail = false;
@@ -39,25 +39,20 @@ let gameWaitingForStart = true;
 
 const addNewHeadForSnake = () => {
   reduceGrowSnakeCount();
+
   const previousHead = snakeBlocks[snakeBlocks.length - 1];
-  const x = setNewHeadX(previousHead.x);
-  const y = setNewHeadY(previousHead.y);
 
-  const newSnakeHead = { x: x, y: y };
-
-  // set previous head color to body color
-  ctx.fillStyle = bodyColor;
-  ctx.fillRect(previousHead.x, previousHead.y, snakeBlockFillSize, snakeBlockFillSize);
-
-  checkIfSnakeHitWall(x,y);
-  checkIfSnakeHitBody(x,y);
-  checkIfSnakeHitApple(x,y);
-
-  snakeBlocks.push(newSnakeHead);
-
-  // Draw new head with headcolor
-  ctx.fillStyle = gameOver ? gameOverColor : headColor;
-  ctx.fillRect(x, y, snakeBlockFillSize, snakeBlockFillSize);
+  const newX = setNewHeadX(previousHead.x);
+  const newY = setNewHeadY(previousHead.y);
+  const newSnakeHead = { x: newX, y: newY };
+  
+  checkIfSnakeHitWall(newX,newY);
+  checkIfSnakeHitBody(newX,newY);
+  checkIfSnakeHitApple(newX,newY);
+  
+  snakeBlocks.push(newSnakeHead);    
+  changeOldHeadToBody(previousHead.x, previousHead.y);
+  drawNewHeadForSnake(newX, newY);
 };
 
 const setNewHeadX = prevX => {
@@ -87,8 +82,17 @@ const reduceGrowSnakeCount = () => {
   } else {
     skipRemoveTail = false;
   }
+};
 
-}
+const drawNewHeadForSnake = (x, y) => {
+  ctx.fillStyle = gameOver ? gameOverColor : headColor;
+  ctx.fillRect(x, y, snakeBlockFillSize, snakeBlockFillSize);
+};
+
+const changeOldHeadToBody = (x, y) => {
+  ctx.fillStyle = bodyColor;
+  ctx.fillRect(x, y, snakeBlockFillSize, snakeBlockFillSize);
+};
 
 const generateApple = () => {
   const appleX = Math.floor(Math.random() * Math.floor(appleSize / 2) ) * appleSize;
