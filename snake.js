@@ -17,21 +17,25 @@ const snakeBlockFillSize = snakeBlockSize - 0.1 * snakeBlockSize;
 // set snake starting point
 const startX = ctx.canvas.width / 2 - (snakeBlockSize);
 const startY = ctx.canvas.height / 2 - (snakeBlockSize);
-
-// game variables
-let snakeBlocks = [{ x: startX, y: startY }];
-const snakeWillGrowOnAppleAmount = 3;
-let growSnakeCount = 0;
-let gameOver = false;
-let skipRemoveTail = false;
-let direction = 'down';
-let appleActive = false;
-let appleLocation = {};
-let score = 0;
+ctx.fillStyle = headColor;
+ctx.fillRect(startX, startY, snakeBlockFillSize, snakeBlockFillSize);
 
 // setup apple
+const snakeWillGrowOnAppleAmount = 3;
 const appleColor = 'green';
 const appleSize = snakeBlockSize;
+
+// game variables
+let appleActive = false;
+let appleLocation = {};
+let direction = 'down';
+let gameOver = false;
+let growSnakeCount = 0;
+let skipRemoveTail = false;
+let score = 0;
+let snakeBlocks = [{ x: startX, y: startY }];
+let gameWaitingForStart = true;
+
 
 const addNewHeadForSnake = () => {
   reduceGrowSnakeCount();
@@ -48,7 +52,6 @@ const addNewHeadForSnake = () => {
   checkIfSnakeHitWall(x,y);
   checkIfSnakeHitBody(x,y);
   checkIfSnakeHitApple(x,y);
-
 
   snakeBlocks.push(newSnakeHead);
 
@@ -152,13 +155,18 @@ const movementDirection = (keyCode) => {
 };
 
 const gameLoop = setInterval(function() {
+  
   if (gameOver) {
     console.log("Game over")
     clearInterval(gameLoop);
   }
-
+  
   if(!appleActive){
     generateApple();
+  }
+
+  if(gameWaitingForStart){
+    return;
   }
 
   addNewHeadForSnake();
@@ -168,4 +176,8 @@ const gameLoop = setInterval(function() {
 document.onkeydown = (e) => {    
   const keyCode = e.keyCode;
   movementDirection(keyCode);
+
+  if(gameWaitingForStart){
+    gameWaitingForStart = false;
+  }
 };
