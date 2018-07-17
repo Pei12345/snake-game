@@ -1,3 +1,8 @@
+// modals
+const gameOverModal = document.getElementById('modal-game-over');
+const gameOverText = document.getElementById('game-over-text');
+const modalCloseSpan = document.getElementsByClassName("close")[0];
+
 // setup canvas
 const canvas = document.querySelector('canvas');
 const scoreText = document.getElementById('score-text');
@@ -108,7 +113,6 @@ const generateApple = () => {
   } else {
     generateApple();
   }
-
 };
 
 // snake collisions
@@ -158,10 +162,11 @@ const movementDirection = (keyCode) => {
       }
 };
 
-const gameLoop = setInterval(function() {
+const gameLoop = setInterval(() => {
   
   if (gameOver) {
     console.log("Game over")
+    showGameOverModal();
     clearInterval(gameLoop);
   }
   
@@ -185,3 +190,22 @@ document.onkeydown = (e) => {
     gameWaitingForStart = false;
   }
 };
+
+// modal functions
+
+const showGameOverModal = () => {
+  gameOverText.innerHTML = `Game over. Your score: ${score}`;
+  gameOverModal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+modalCloseSpan.onclick = () => {
+  gameOverModal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = (event) => {
+  if (event.target == gameOverModal) {
+      gameOverModal.style.display = "none";
+  }
+}
